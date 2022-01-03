@@ -14,7 +14,12 @@ port = "COM5" # Set to the USB port of your arduino device
 servoPin = 9 # Set to your servo pin
 servoPinType = "digital" # Set to analog if using analog
 
-board = Arduino(port)
+try:
+	board = Arduino(port)
+except:
+	print("Arduino board not plugged in! (Or not accessible on specified port)")
+	time.sleep(5000)
+	quit()
 if (servoPinType == "digital"):
     board.digital[servoPin].mode = SERVO
 else:
@@ -25,7 +30,7 @@ r = sr.Recognizer()
 r.pause_threshold = 0.3
 r.non_speaking_duration = r.pause_threshold
 r.WaitTimeoutError = 2
-r.dynamic_energy_threshold = True
+r.energy_threshold = 3000
 
 #Convert characters to morse code
 def morseCharacter(character):
@@ -143,9 +148,9 @@ def searchForSpeech():
 # Functions to make stuff more readable
 def tapDown(pin):
     if (servoPinType == "digital"):
-        board.digital[pin].write(120) # Angle is mostly arbitrary, just found 120 works well
+        board.digital[pin].write(45) # Angle is mostly arbitrary, just found 45 works well
     else:
-        board.analog[pin].write(120)
+        board.analog[pin].write(45)
 
 def tapUp(pin):
     if (servoPinType == "digital"):
@@ -157,7 +162,7 @@ def tap(tapType):
     # Change speed of morse code (in s). All timings are based on this
     # 0.15 is about the fastest you should go, since the servo doesn't have enough speed to make the full rotation in any time less than that. Even 0.15 is a bit rough for this, I stick with 0.2
     # If you're using a different/stronger servo feel free to make this lower
-    speed = 0.2
+    speed = 0.1
 
     #Don't change these unless you want to change the entire morseCharacter() function
     dot = "."
