@@ -2,9 +2,30 @@
 # v1.0 by DucksIncoming
 # 1/3/2021 - Python 3.10.1 64-bit
 
-import speech_recognition as sr
+# This video was very helpful I'm glad I don't have to deal with any cloud APIs
+# https://www.youtube.com/watch?v=K_WbsFrPUCk
 
+import speech_recognition as sr
+import time
+from pyfirmata import Arduino, SERVO
+
+# Arduino config
+port = "COM5" # Set to the USB port of your arduino device
+servoPin = 9 # Set to your servo pin
+servoPinType = "digital" # Set to analog if using analog
+
+board = Arduino(port)
+if (servoPinType == "digital"):
+    board.digital[servoPin].mode = SERVO
+else:
+    board.analog[servoPin].mode = SERVO
+
+# Speech recognition stuff, don't mess with unless u know how it works
 r = sr.Recognizer()
+r.pause_threshold = 0.3
+r.non_speaking_duration = r.pause_threshold
+r.WaitTimeoutError = 2
+r.dynamic_energy_threshold = True
 
 #Convert characters to morse code
 def morseCharacter(character):
@@ -81,39 +102,101 @@ def morseCharacter(character):
             "---..",
         "9":
             "----.",
+        "|":
+            "X",
+        "=":
+            ">"
     }
     return switch.get(character,"")
 
 def morseCodify(input):
-    #Change speed of morse code. All timings are based on this
-    speed = 10
-
-    #Standard morse code time spacing. Don't change
-    dotTime = speed
-    dashTime = speed * 3
-    symbolSpacing = speed
-    characterSpacing = speed * 3
-    wordSpacing = speed * 7
-    
-    input = input.replace(' ', '')
+    input = input.replace(' ', '|')
     input = input.replace('-', '')
-    shortBeep = "."
-    longBeep = "-"
 
     inputArray = list(input)
 
     for inputChar in inputArray:
-        print(morseCharacter(inputChar))
+        for morseChar in morseCharacter(inputChar):
+            tap(morseChar)
+        tap(morseCharacter("="))
 
 #Speech Recognition
-with sr.Microphone() as source:
-    print('Say something')
-    audio = r.listen(source)
-    
+def searchForSpeech():
+    with sr.Microphone() as source:
+        audio = r.listen(source)
+        
     try:
-        text = r.recognize_google(audio)
+        text = str(r.recognize_google(audio))
+        
+        #You can pry swearing from my cold dead hands
+        text = text.replace('f***', 'fuck')
+        text = text.replace('s***', 'shit')
+        text = text.replace('b****', 'bitch')
+        
         print(text)
         morseCodify(text)
-    
+        
     except:
-        print("No speech")
+        print("...")
+
+
+# Functions to make stuff more readable
+def tapDown(pin):
+    if (servoPinType == "digital"):
+        board.digital[pin].write(120) # Angle is mostly arbitrary, just found 120 works well
+    else:
+        board.analog[pin].write(120)
+
+def tapUp(pin):
+    if (servoPinType == "digital"):
+        board.digital[pin].write(0)
+    else:
+        board.analog[pin].write(0)
+
+def tap(tapType):
+    # Change speed of morse code (in s). All timings are based on this
+    # 0.15 is about the fastest you should go, since the servo doesn't have enough speed to make the full rotation in any time less than that. Even 0.15 is a bit rough for this, I stick with 0.2
+    # If you're using a different/stronger servo feel free to make this lower
+    speed = 0.2
+
+    #Don't change these unless you want to change the entire morseCharacter() function
+    dot = "."
+    dash = "-"
+    wordBreak = "X"
+    charBreak = ">"
+
+    #Standard morse code time spacing. Don't change
+    dotTime = speed
+    dashTime = speed * 3
+    symbolSpacing = speed # Unused but here for completeness
+    intraCharacterSpacing = speed
+    characterSpacing = speed * 3
+    wordSpacing = speed * 7
+
+    #This should be a switch statement but with python its so much effort so here's some inefficiency for u as a gift
+    if (tapType == dot):
+        tapDown(9)
+        print(".")
+        time.sleep(dotTime)
+        
+        tapUp(9)
+        print(" ")
+        time.sleep(intraCharacterSpacing)
+    elif (tapType == dash):
+        tapDown(9)
+        print("-")
+        time.sleep(dashTime)
+        
+        tapUp(9)
+        print(" ")
+        time.sleep(intraCharacterSpacing)
+    elif (tapType == wordBreak):
+        print("X")
+        #This feels sloppy but its easier than checking if its the end of a sentence in the first place
+        time.sleep(wordSpacing - characterSpacing)
+    elif (tapType == charBreak):
+        print(">")
+        time.sleep(characterSpacing - intraCharacterSpacing)
+
+while True:
+    searchForSpeech()
