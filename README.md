@@ -7,8 +7,8 @@ This project can be used by anyone who wants to and is covered under the MIT lic
 Current Status: Incomplete
 
 Todo:
-- Implement IBM Watson Speech-to-text neural network
-- Create solution for translating text into morse code
-- Build mechanism for replaying morse code physically
+- Implement Speech-to-text API ✓
+- Create function for translating text into morse code ✓
+- Build mechanism for replaying morse code physically ✓
   - Make mechanism wearable
-- Build in communication between neural network and morse code mechanism
+- Build in communication between neural network and morse code mechanism ✓
