@@ -137,6 +137,8 @@ def searchForSpeech():
         text = text.replace('f***', 'fuck')
         text = text.replace('s***', 'shit')
         text = text.replace('b****', 'bitch')
+
+        text = text.lower()
         
         print(text)
         morseCodify(text)
