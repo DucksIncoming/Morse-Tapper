@@ -135,11 +135,11 @@ def searchForSpeech():
         
         #You can pry swearing from my cold dead hands
         text = text.replace('f***', 'fuck')
-        text = text.replace('f******', 'fucking')
+        text = text.replace('fuck***', 'fucking')
         text = text.replace('s***', 'shit')
-        text = text.replace('s*******', 'shitting')
+        text = text.replace('shit****', 'shitting')
         text = text.replace('b****', 'bitch')
-        text = text.replace('b*******', 'bitching')
+        text = text.replace('bitch***', 'bitching')
 
         text = text.lower()
         
