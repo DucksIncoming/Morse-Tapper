@@ -4,11 +4,4 @@ This is a relatively simple project that transcribes words spoken into a microph
 
 This project can be used by anyone who wants to and is covered under the MIT license. Feel free to make additions or changes as you see fit and distribute/use this for personal or commercial purposes.
 
-Current Status: Incomplete
-
-Todo:
-- Implement Speech-to-text API ✓
-- Create function for translating text into morse code ✓
-- Build mechanism for replaying morse code physically ✓
-  - Make mechanism wearable
-- Build in communication between neural network and morse code mechanism ✓
+Current Status: Complete ✓
