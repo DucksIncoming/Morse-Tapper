@@ -5,3 +5,5 @@ This is a relatively simple project that transcribes words spoken into a microph
 This project can be used by anyone who wants to and is covered under the MIT license. Feel free to make additions or changes as you see fit and distribute/use this for personal or commercial purposes.
 
 Current Status: Complete ✓
+
+Setup: https://drive.google.com/file/d/1ZDs7IQZUfi97xsf9j073AhKYisrZKh-g/view?usp=sharing
