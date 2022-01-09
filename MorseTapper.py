@@ -10,16 +10,17 @@ import time
 from pyfirmata import Arduino, SERVO
 
 # Arduino config
-port = "COM5" # Set to the USB port of your arduino device
+port = "COM2" # Set to the USB port of your arduino device
 servoPin = 9 # Set to your servo pin
 servoPinType = "digital" # Set to analog if using analog
 
 try:
-	board = Arduino(port)
+    board = Arduino(port)
 except:
 	print("Arduino board not plugged in! (Or not accessible on specified port)")
 	time.sleep(5000)
 	quit()
+	
 if (servoPinType == "digital"):
     board.digital[servoPin].mode = SERVO
 else:
@@ -32,7 +33,7 @@ r.non_speaking_duration = r.pause_threshold
 r.WaitTimeoutError = 2
 r.energy_threshold = 3000
 
-#Convert characters to morse code
+# Convert characters to morse code
 def morseCharacter(character):
     switch = {
         "a":
@@ -125,15 +126,15 @@ def morseCodify(input):
             tap(morseChar)
         tap(morseCharacter("="))
 
-#Speech Recognition
+# Speech Recognition
 def searchForSpeech():
     with sr.Microphone() as source:
         audio = r.listen(source)
-        
+
     try:
         text = str(r.recognize_google(audio))
-        
-        #You can pry swearing from my cold dead hands
+
+        # You can pry swearing from my cold dead hands
         text = text.replace('f***', 'fuck')
         text = text.replace('fuck***', 'fucking')
         text = text.replace('s***', 'shit')
@@ -169,13 +170,13 @@ def tap(tapType):
     # If you're using a different/stronger servo feel free to make this lower
     speed = 0.1
 
-    #Don't change these unless you want to change the entire morseCharacter() function
+    # Don't change these unless you want to change the entire morseCharacter() function
     dot = "."
     dash = "-"
     wordBreak = "X"
     charBreak = ">"
 
-    #Standard morse code time spacing. Don't change
+    # Standard morse code time spacing. Don't change
     dotTime = speed
     dashTime = speed * 3
     symbolSpacing = speed # Unused but here for completeness
@@ -183,7 +184,7 @@ def tap(tapType):
     characterSpacing = speed * 3
     wordSpacing = speed * 7
 
-    #This should be a switch statement but with python its so much effort so here's some inefficiency for u as a gift
+    # This should be a switch statement but with python its so much effort so here's some inefficiency for u as a gift
     if (tapType == dot):
         tapDown(9)
         print(".")
@@ -202,11 +203,13 @@ def tap(tapType):
         time.sleep(intraCharacterSpacing)
     elif (tapType == wordBreak):
         print("X")
-        #This feels sloppy but its easier than checking if its the end of a sentence in the first place
+        # This feels sloppy but its easier than checking if its the end of a sentence in the first place
         time.sleep(wordSpacing - characterSpacing)
     elif (tapType == charBreak):
         print(">")
         time.sleep(characterSpacing - intraCharacterSpacing)
+
+print("Ready To Listen:\n")
 
 while True:
     searchForSpeech()
